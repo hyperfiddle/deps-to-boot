@@ -1,0 +1,54 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: clojure:boot-2.7.1-alpine
+        environment:
+          BOOT_JVM_OPTIONS: "-Xms1024m -Xmx2048m"
+          BOOT_WATCHERS_DISABLE: "yes"
+    steps:
+      - checkout
+      - restore_cache:
+          key: build-{{checksum "boot.properties" }}-{{ checksum "build.boot" }}
+      - run: boot pom jar -f deps-to-boot.jar target
+      - persist_to_workspace:
+          root: .
+          paths: target
+      - save_cache:
+          paths:
+            - ~/.m2
+            - ~/.boot/cache/lib
+            - ~/.boot/cache/bin
+          key: build-{{checksum "boot.properties" }}-{{ checksum "build.boot" }}
+
+  publish:
+    docker:
+      - image: clojure:boot-2.7.1-alpine
+        environment:
+          BOOT_JVM_OPTIONS: "-Xms1024m -Xmx2048m"
+          BOOT_WATCHERS_DISABLE: "yes"
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          key: publish-{{checksum "boot.properties" }}-{{ checksum "build.boot" }}
+      - run: boot push-snapshot -f target/deps-to-boot.jar
+      - save_cache:
+          paths:
+            - ~/.m2
+            - ~/.boot/cache/lib
+            - ~/.boot/cache/bin
+          key: publish-{{checksum "boot.properties" }}-{{ checksum "build.boot" }}
+
+workflows:
+  version: 2
+  build_and_publish:
+    jobs:
+      - build
+      - publish:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
