@@ -33,7 +33,7 @@ jobs:
           at: .
       - restore_cache:
           key: publish-{{checksum "boot.properties" }}-{{ checksum "build.boot" }}
-      - run: boot push-snapshot -f target/deps-to-boot.jar
+      - run: boot publish -f target/deps-to-boot.jar
       - save_cache:
           paths:
             - ~/.m2

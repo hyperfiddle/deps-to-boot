@@ -8,13 +8,25 @@
 (require '[adzerk.bootlaces :refer [push-snapshot]]
          'boot.lein)
 
-(def +version+ "1.0.0-SNAPSHOT")
+(def +version+ "1.0.0")
 
 (task-options!
   push #(into % {:repo "deploy-clojars" :ensure-version +version+})
   pom {:project 'deps-to-boot
        :version +version+})
 
+(deftask publish [f file PATH str]
+         (if #(.endsWith +version+ "-SNAPSHOT")
+           (push-snapshot)
+           (do (merge-env!
+                 :repositories [["deploy-clojars" {:url "https://clojars.org/repo/"
+                                                   :username (System/getenv "CLOJARS_USER")
+                                                   :password (System/getenv "CLOJARS_PASS")}]])
+               (push
+                 :file file
+                 :ensure-release true
+                 :repo "deploy-clojars"))))
+
 (when (> (.lastModified (clojure.java.io/file "build.boot"))
          (.lastModified (clojure.java.io/file "project.clj")))
-      (boot.lein/write-project-clj))
+  (boot.lein/write-project-clj))
