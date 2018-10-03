@@ -8,7 +8,7 @@
 (require '[adzerk.bootlaces :refer [push-snapshot]]
          'boot.lein)
 
-(def +version+ "1.1.0-SNAPSHOT")
+(def +version+ "1.1.0")
 
 (task-options!
   push #(into % {:repo "deploy-clojars" :ensure-version +version+})
