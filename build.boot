@@ -17,7 +17,7 @@
 
 (deftask publish [f file PATH str]
          (if (.endsWith +version+ "-SNAPSHOT")
-           (push-snapshot file)
+           (push-snapshot :file file)
            (do (merge-env!
                  :repositories [["deploy-clojars" {:url "https://clojars.org/repo/"
                                                    :username (System/getenv "CLOJARS_USER")
