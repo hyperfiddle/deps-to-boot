@@ -1,6 +1,6 @@
 (set-env!
   :resource-paths #{"src"}
-  :dependencies '[[org.clojure/clojure "1.9.0-alpha14"]
+  :dependencies '[[org.clojure/clojure "1.9.0"]
 
                   [adzerk/bootlaces "0.1.13" :scope "test"]
                   [sparkfund/boot-lein-generate "0.3.0" :scope "test"]])
@@ -8,7 +8,7 @@
 (require '[adzerk.bootlaces :refer [push-snapshot]]
          'boot.lein)
 
-(def +version+ "1.0.0")
+(def +version+ "1.1.0-SNAPSHOT")
 
 (task-options!
   push #(into % {:repo "deploy-clojars" :ensure-version +version+})
